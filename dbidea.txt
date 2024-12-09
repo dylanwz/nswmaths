@@ -1,0 +1,87 @@
+Revision Village Database Schema:
+
+
+[Users]
+PK		UserID			INT			AUTO-INCREMENT
+		FirstName		CHAR		NOT-NULL
+		LastName		CHAR		NOT-NULL
+		Email			CHAR		NOT-NULL
+		PassHash		BINARY		NOT-NULL
+		Verified		BOOL		NOT-NULL
+		Active			BOOL		NOT-NULL
+		LastLogon		DATETIME	
+		DateCreated		DATETIME	
+		// Add something about connected card/acc info (otherwise we use a payment api like stripe)
+
+
+[Subscriptions]
+PK		SubscriptionID	INT			AUTO-INCREMENT
+		Name			CHAR		NOT-NULL
+		Cost			DECIMAL		NOT-NULL
+		Duration		INT			NOT-NULL
+
+
+[UserSubscriptions]
+FK		UserID
+FK		SubsriptionID
+		Active			BOOL		
+		DateStarted		DATETIME	NOT-NULL
+		// Potentially also details about whether it was purchased at a different price / Link to transaction ID 
+
+[CompletedQuestions]
+FK		UserID
+FK		QuestionID
+
+[GeneratedPapers]
+PK		PaperID			INT			AUTO-INCREMENT
+FK		UserID
+
+[GeneratedPapersCross]
+FK		PaperID			(GeneratedPapers)
+FK		QuestionID
+
+
+[Questions]
+PK		QuestionID		INT			AUTO-INCREMENT
+		QuestionData	TEXT		NOT-NULL
+		OriginID		INT			NOT-NULL
+		Difficulty		TINYINT		NOT-NULL	
+		Metadata		TEXT
+		Marks			TINYINT
+		TimeAllocation	TINYINT
+		
+[QuestionCategory]
+FK		QuestionID
+FK		CategoryID
+
+
+[Categories]
+PK		CategoryID		INT			AUTO-INCREMENT
+		ParentCategory	INT
+		CategoryName	TEXT		NOT-NULL
+
+[OfficialPapers]
+PK		PaperID			INT			AUTO-INCREMENT
+		PaperYear		TINYINT
+		Units			TINYINT
+		
+		
+
+
+Categories Table stores things like
+Calculus
+Integration					(Parent Category Calculus)
+Integration By Parts		(Parent Category Integration)
+
+
+Each Question can have multiple categories assigned (Thats why theres the QuestionCategory cross table - One to Many)
+Each Question *can* belong to an Official Paper (if not than ringo made it lol so OriginID can be 0 or smth)
+
+Users can generate papers
+-> Paper is given an ID under GeneratedPapers Table
+-> Each question is assigned to the paper by REFERENCE (so it can update in the future) in the GeneratedPapersCross table
+
+Subscriptions table has information about the subscriptions available
+UserSubscriptions is the user's actual current and past subscription
+
+
