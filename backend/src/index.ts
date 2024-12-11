@@ -2,6 +2,8 @@ import express from 'express';
 
 import { errorHandler } from './middleware/error';
 
+import { questionRouter } from './routes/question';
+
 const app = express();
 
 app.use(errorHandler);
